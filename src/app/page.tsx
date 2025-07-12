@@ -1,21 +1,10 @@
-import InputComponent from "@/components/input/input.component";
 import styles from "./page.module.scss";
-import FormComponent from "@/components/form/form.component";
+
+import LoginComponent from "@/components/login/login.component";
 const page = () => {
   return (
     <main className={styles.main}>
-      <FormComponent
-        title="ورود"
-        subTitle=" سلام، لطفا اطلاعات کاربری خود را وارد کنید."
-      >
-        <InputComponent
-          isFocused={true}
-          title="نام کابری: "
-          id="username"
-          type="text"
-        />
-        <InputComponent title="کلمه عبور: " id="password" type="password" />
-      </FormComponent>
+      <LoginComponent />
     </main>
   );
 };

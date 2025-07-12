@@ -1,15 +1,19 @@
 "use client";
 import { HTMLInputTypeAttribute, useEffect, useRef } from "react";
 import styles from "./input.module.scss";
+import clsx from "clsx";
 
 interface IParams {
   title: string;
   type: HTMLInputTypeAttribute;
   id: string;
   isFocused?: boolean;
+  onBlur?: (val: string) => void;
+  onChange?: (val: string) => void;
+  errorMsg?: string;
 }
 const InputComponent = (params: IParams) => {
-  const { title, type, id, isFocused } = params;
+  const { title, type, id, isFocused, onBlur, onChange, errorMsg } = params;
   const inputRef = useRef<null | HTMLInputElement>(null);
   useEffect(() => {
     if (!inputRef.current || !isFocused) return;
@@ -21,7 +25,18 @@ const InputComponent = (params: IParams) => {
   return (
     <div className={styles["input-group"]}>
       <label htmlFor={id}>{title} </label>
-      <input type={type} name={id} id={id} ref={inputRef} />
+      <input
+        type={type}
+        name={id}
+        id={id}
+        ref={inputRef}
+        onBlur={(e) => onBlur?.(e.target.value)}
+        onChange={(e) => onChange?.(e.target.value)}
+        className={clsx(
+          errorMsg ? styles.error : errorMsg === null ? styles.success : ""
+        )}
+      />
+      {errorMsg && <p>{errorMsg}</p>}
     </div>
   );
 };
