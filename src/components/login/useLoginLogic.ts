@@ -1,10 +1,9 @@
 "use client";
+import { FormEvent, useEffect, useState } from "react";
+import z from "zod";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useAuth } from "@/providers/auth.provider";
-
-import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import z from "zod";
 
 const ILoginState = z.object({
   username: z.string().min(1, {
@@ -13,32 +12,42 @@ const ILoginState = z.object({
   password: z.string().min(1, {
     message: "کلمه عبور نباید خالی باشد!",
   }),
+  phone: z
+    .string()
+    .regex(/^((0)?9\d{9}|989\d{9})$/, {
+      message: "شماره موبایل باید طبق فرمت شماره های ایران باشد",
+    })
+    .optional()
+    .or(z.literal("")),
 });
 
-export interface IState {
-  username: string;
-  password: string;
-}
+export type IState = z.infer<typeof ILoginState>;
+
 function useLoginLogic() {
   const { setUser } = useAuth();
-  const [loginState, setLoginState] = useState({
+
+  const [loginState, setLoginState] = useState<IState>({
     username: "",
     password: "",
+    phone: "",
   });
 
   const [zodErrors, setZodErrors] = useState<{
     username: string | null;
     password: string | null;
+    phone: string | null;
   }>({
-    username: "",
-    password: "",
+    username: null,
+    password: null,
+    phone: null,
   });
-  const [serverError, setServerError] = useState({ state: false, msg: "" });
 
-  const checkValidity = <K extends keyof IState>(
-    type: keyof IState,
-    value: IState[K]
-  ) => {
+  const [serverError, setServerError] = useState({
+    state: false,
+    msg: "",
+  });
+
+  const checkValidity = <K extends keyof IState>(type: K, value: IState[K]) => {
     const parsed = ILoginState.shape[type].safeParse(value);
 
     if (parsed.success) {
@@ -65,6 +74,7 @@ function useLoginLogic() {
       setZodErrors({
         username: null,
         password: null,
+        phone: null,
       });
     } else {
       const zodErrPass = z.treeifyError(parsed.error).properties?.password;
@@ -91,15 +101,19 @@ function useLoginLogic() {
       state: false,
       msg: "",
     });
+
+    const reqBody = {
+      username: loginState.username,
+      password: loginState.password,
+    };
     try {
       const res = await fetch("/api/log-in", {
         method: "POST",
-        body: JSON.stringify(loginState),
+        body: JSON.stringify(reqBody),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(res);
 
       if (res.ok) {
         const data = await res.json();
@@ -115,15 +129,13 @@ function useLoginLogic() {
     }
   };
 
-  const debouncedCheck = useDebounce(checkValidity, 200);
+  const debouncedCheck = useDebounce(checkValidity, 500);
   const debouncedStateSet = useDebounce((type: keyof IState, val: string) => {
-    setLoginState((prev) => {
-      return {
-        ...prev,
-        [type]: val,
-      };
-    });
-  }, 200);
+    setLoginState((prev) => ({
+      ...prev,
+      [type]: val,
+    }));
+  }, 100);
 
   useEffect(() => {
     if (serverError.state) {
@@ -131,14 +143,14 @@ function useLoginLogic() {
         position: "bottom-center",
       });
     }
-  }, [serverError.msg, serverError.state]);
+  }, [serverError]);
+
   return {
     loginState,
+    zodErrors,
+    handleSubmit,
     debouncedCheck,
     debouncedStateSet,
-    zodErrors,
-
-    handleSubmit,
   };
 }
 

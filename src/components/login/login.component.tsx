@@ -35,6 +35,18 @@ const LoginComponent = () => {
       },
       errorMsg: zodErrors.password,
     },
+    {
+      isFocused: false,
+      title: "شماره موبایل (اختیاری): ",
+      id: "phone",
+      type: "tel",
+      onBlur: (val: string) => debouncedCheck("phone", val),
+      onChange: (val: string) => {
+        debouncedCheck("phone", val);
+        debouncedStateSet("phone", val);
+      },
+      errorMsg: zodErrors.phone,
+    },
   ];
   return (
     <CardParentComponent>
