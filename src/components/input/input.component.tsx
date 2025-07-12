@@ -36,7 +36,7 @@ const InputComponent = (params: IParams) => {
           errorMsg ? styles.error : errorMsg === null ? styles.success : ""
         )}
       />
-      {errorMsg && <p>{errorMsg}</p>}
+      {errorMsg && <p className={styles.error}>{errorMsg}</p>}
     </div>
   );
 };

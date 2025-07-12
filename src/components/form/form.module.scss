@@ -33,10 +33,12 @@
     text-align: start;
 
     font-weight: 800;
+    font-size: var(--fz-md);
     color: var(--text-darkest-clr);
   }
 
   .sub-title {
+    font-size: var(--fz-sm);
     color: var(--text-dark-clr);
   }
   .children {

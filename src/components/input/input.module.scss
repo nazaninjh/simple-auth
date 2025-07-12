@@ -1,7 +1,7 @@
 .input-group {
   display: grid;
   row-gap: 0.5rem;
-
+  font-size: var(--fz-sm);
   > input {
     outline: none;
 
@@ -16,5 +16,10 @@
     &.success {
       border: 1px solid var(--primary-clr);
     }
+  }
+
+  .error {
+    font-size: var(--fz-xs);
+    color: var(--error-clr);
   }
 }

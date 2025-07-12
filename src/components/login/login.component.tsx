@@ -2,6 +2,7 @@
 import FormComponent from "@/components/form/form.component";
 import InputComponent from "@/components/input/input.component";
 import useLoginLogic from "./useLoginLogic";
+import ButtonComponent from "../button/button.component";
 
 const LoginComponent = () => {
   const { checkValidity, zodErrors } = useLoginLogic();
@@ -46,6 +47,8 @@ const LoginComponent = () => {
             />
           );
         })}
+
+        <ButtonComponent content="ورود" type="submit" />
       </FormComponent>
     </div>
   );
