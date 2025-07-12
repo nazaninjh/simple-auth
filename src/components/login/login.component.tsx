@@ -5,8 +5,10 @@ import useLoginLogic from "./useLoginLogic";
 import ButtonComponent from "../button/button.component";
 
 import styles from "./login.module.scss";
+
 const LoginComponent = () => {
-  const { checkValidity, zodErrors } = useLoginLogic();
+  const { debouncedCheck, debouncedStateSet, zodErrors, handleSubmit } =
+    useLoginLogic();
 
   const inputs = [
     {
@@ -14,8 +16,11 @@ const LoginComponent = () => {
       title: "نام کابری: ",
       id: "username",
       type: "text",
-      onBlur: (val: string) => checkValidity("username", val),
-      onChange: (val: string) => checkValidity("username", val),
+      onBlur: (val: string) => debouncedCheck("username", val),
+      onChange: (val: string) => {
+        debouncedCheck("username", val);
+        debouncedStateSet("username", val);
+      },
       errorMsg: zodErrors.username,
     },
     {
@@ -23,14 +28,18 @@ const LoginComponent = () => {
       title: "کلمه عبور: ",
       id: "password",
       type: "password",
-      onBlur: (val: string) => checkValidity("password", val),
-      onChange: (val: string) => checkValidity("password", val),
+      onBlur: (val: string) => debouncedCheck("password", val),
+      onChange: (val: string) => {
+        debouncedCheck("password", val);
+        debouncedStateSet("password", val);
+      },
       errorMsg: zodErrors.password,
     },
   ];
   return (
     <div className={styles.wrapper}>
       <FormComponent
+        onSubmit={(e) => handleSubmit(e)}
         title="ورود"
         subTitle=" سلام، لطفا اطلاعات کاربری خود را وارد کنید."
       >

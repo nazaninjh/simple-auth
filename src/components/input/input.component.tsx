@@ -10,7 +10,7 @@ interface IParams {
   isFocused?: boolean;
   onBlur?: (val: string) => void;
   onChange?: (val: string) => void;
-  errorMsg?: string;
+  errorMsg?: string | null;
 }
 const InputComponent = (params: IParams) => {
   const { title, type, id, isFocused, onBlur, onChange, errorMsg } = params;

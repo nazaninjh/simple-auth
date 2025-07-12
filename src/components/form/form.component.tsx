@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FormEvent } from "react";
 import styles from "./form.module.scss";
 
 import IcRoundCallMissedOutgoing from "./IcRoundCallMissedOutgoing";
@@ -6,13 +6,15 @@ const FormComponent = ({
   children,
   title,
   subTitle,
+  onSubmit,
 }: {
   children: React.ReactNode;
   title: string;
   subTitle: string;
+  onSubmit: (e: FormEvent) => Promise<void>;
 }) => {
   return (
-    <form className={styles.form}>
+    <form className={styles.form} onSubmit={onSubmit}>
       <div className={styles.icon}>
         <IcRoundCallMissedOutgoing width={100} height={68} />
       </div>
