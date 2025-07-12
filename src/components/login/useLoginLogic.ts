@@ -1,5 +1,7 @@
 "use client";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useAuth } from "@/providers/auth.provider";
+
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import z from "zod";
@@ -18,6 +20,7 @@ export interface IState {
   password: string;
 }
 function useLoginLogic() {
+  const { setUser } = useAuth();
   const [loginState, setLoginState] = useState({
     username: "",
     password: "",
@@ -95,7 +98,8 @@ function useLoginLogic() {
       console.log(res);
 
       if (res.ok) {
-        console.log("ok", await res.json());
+        const data = await res.json();
+        setUser(data);
       } else if (res.status === 401) {
         setServerError({
           state: true,

@@ -4,7 +4,7 @@ import InputComponent from "@/components/input/input.component";
 import useLoginLogic from "./useLoginLogic";
 import ButtonComponent from "../button/button.component";
 
-import styles from "./login.module.scss";
+import CardParentComponent from "../card-parent/cardParent.component";
 
 const LoginComponent = () => {
   const { debouncedCheck, debouncedStateSet, zodErrors, handleSubmit } =
@@ -37,7 +37,7 @@ const LoginComponent = () => {
     },
   ];
   return (
-    <div className={styles.wrapper}>
+    <CardParentComponent>
       <FormComponent
         onSubmit={(e) => handleSubmit(e)}
         title="ورود"
@@ -60,7 +60,7 @@ const LoginComponent = () => {
 
         <ButtonComponent content="ورود" type="submit" />
       </FormComponent>
-    </div>
+    </CardParentComponent>
   );
 };
 

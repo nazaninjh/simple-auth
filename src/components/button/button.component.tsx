@@ -6,11 +6,13 @@ const ButtonComponent = ({
   content,
   disabled = false,
   customStyle,
+  onClick,
 }: {
   type?: "reset" | "button" | "submit";
   content: string;
   disabled?: boolean;
   customStyle?: CSSProperties;
+  onClick?: () => void;
 }) => {
   return (
     <button
@@ -18,6 +20,7 @@ const ButtonComponent = ({
       type={type}
       style={customStyle}
       disabled={disabled}
+      onClick={onClick}
     >
       {content}
     </button>

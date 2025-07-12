@@ -4,12 +4,15 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import styles from "./page.module.scss";
+import { AuthProvider } from "@/providers/auth.provider";
 const page = () => {
   return (
-    <main className={styles.main}>
-      <ToastContainer />
-      <LoginComponent />
-    </main>
+    <AuthProvider>
+      <main className={styles.main}>
+        <ToastContainer />
+        <LoginComponent />
+      </main>
+    </AuthProvider>
   );
 };
 
