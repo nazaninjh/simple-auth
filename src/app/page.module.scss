@@ -1,8 +1,13 @@
-@use "./../styles/placeholders";
+@use "./../styles/mixins" as mixin;
 .main {
   height: 100vh;
   height: 100dvh;
   width: 100%;
 
-  @extend %grid-centered;
+  display: grid;
+  @include mixin.mq(sm) {
+    justify-items: center;
+    align-items: center;
+    align-content: center;
+  }
 }

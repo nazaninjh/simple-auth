@@ -1,5 +1,6 @@
 import React, { CSSProperties } from "react";
 import styles from "./button.module.scss";
+import clsx from "clsx";
 const ButtonComponent = ({
   type = "button",
   content,
@@ -13,7 +14,7 @@ const ButtonComponent = ({
 }) => {
   return (
     <button
-      className={styles.btn}
+      className={clsx(styles.btn, disabled && styles.disabled)}
       type={type}
       style={customStyle}
       disabled={disabled}

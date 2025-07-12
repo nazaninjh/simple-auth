@@ -4,6 +4,7 @@ import InputComponent from "@/components/input/input.component";
 import useLoginLogic from "./useLoginLogic";
 import ButtonComponent from "../button/button.component";
 
+import styles from "./login.module.scss";
 const LoginComponent = () => {
   const { checkValidity, zodErrors } = useLoginLogic();
 
@@ -28,7 +29,7 @@ const LoginComponent = () => {
     },
   ];
   return (
-    <div>
+    <div className={styles.wrapper}>
       <FormComponent
         title="ورود"
         subTitle=" سلام، لطفا اطلاعات کاربری خود را وارد کنید."
