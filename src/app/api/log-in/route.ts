@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbJson from "@/db/db.json";
 import { IDataBase } from "@/types/db.type";
-import bcrypt from "bcryptjs";
 
 const db = dbJson as IDataBase;
 
@@ -33,18 +32,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(safeUser);
   }
 
-  const user = db.results.find((user) => user.login.username === username);
+  const user = db.results.find(
+    (user) =>
+      user.login.username === username && user.login.password === password
+  );
 
   if (!user) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
-
-  const isValid = await bcrypt.compare(password, user.login.password);
-  if (!isValid) {
-    return new Response(JSON.stringify({ error: "Invalid credentials" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
   }
 
   const safeUser = {
