@@ -87,6 +87,10 @@ function useLoginLogic() {
         return;
       }
     }
+    setServerError({
+      state: false,
+      msg: "",
+    });
     try {
       const res = await fetch("/api/log-in", {
         method: "POST",
