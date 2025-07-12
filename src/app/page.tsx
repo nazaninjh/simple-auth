@@ -1,7 +1,19 @@
-import React from "react";
+import LoginComponent from "@/components/login/login.component";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import styles from "./page.module.scss";
+import { AuthProvider } from "@/providers/auth.provider";
 const page = () => {
-  return <div>page</div>;
+  return (
+    <AuthProvider>
+      <main className={styles.main}>
+        <ToastContainer />
+        <LoginComponent />
+      </main>
+    </AuthProvider>
+  );
 };
 
 export default page;

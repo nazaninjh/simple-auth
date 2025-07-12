@@ -1,0 +1,25 @@
+@use "./../../styles/mixins" as mixin;
+.wrapper {
+  color: var(--theme-text-color);
+
+  width: 98%;
+  max-width: 100%;
+  height: 100%;
+
+  padding: 0.75rem;
+
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  row-gap: 0.5rem;
+  @include mixin.mq(sm) {
+    min-width: 20rem;
+    max-width: 30rem;
+    box-shadow: 1px 1px 5px gray;
+    border-radius: 0.75rem;
+  }
+  @include mixin.mq(xl) {
+    min-width: 25rem;
+    max-width: 35rem;
+  }
+}

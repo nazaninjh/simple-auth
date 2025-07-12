@@ -1,0 +1,18 @@
+.btn {
+  outline: none;
+  border: none;
+
+  background-color: var(--primary-clr);
+  color: var(--text-darkest-clr);
+  font-size: var(--fz-md);
+  font-weight: 500;
+
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+
+  cursor: pointer;
+
+  &.disabled {
+    cursor: not-allowed;
+  }
+}
