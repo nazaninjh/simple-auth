@@ -1,0 +1,47 @@
+@use "./../../styles/placeholders";
+@use "./../../styles/mixins" as mixin;
+.form {
+  color: var(--theme-text-color);
+  box-shadow: 1px 1px 5px gray;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+
+  max-width: 100%;
+  height: fit-content;
+
+  @extend %grid-centered;
+  justify-items: start;
+  row-gap: 1rem;
+
+  @include mixin.mq(sm) {
+    min-width: 25rem;
+    max-width: 40rem;
+  }
+  @include mixin.mq(xl) {
+    min-width: 30rem;
+    max-width: 45rem;
+  }
+  .texts {
+    display: grid;
+    row-gap: 0.5rem;
+  }
+  .icon {
+    justify-self: center;
+    color: var(--primary-clr);
+  }
+  .title {
+    text-align: start;
+
+    font-weight: 800;
+    color: var(--text-darkest-clr);
+  }
+
+  .sub-title {
+    color: var(--text-dark-clr);
+  }
+  .children {
+    display: grid;
+    row-gap: 0.5rem;
+    width: 100%;
+  }
+}

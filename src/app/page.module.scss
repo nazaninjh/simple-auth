@@ -1,0 +1,8 @@
+@use "./../styles/placeholders";
+.main {
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+
+  @extend %grid-centered;
+}

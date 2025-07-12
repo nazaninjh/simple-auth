@@ -1,0 +1,17 @@
+@use "sass:map";
+@use "./breakpoints" as breakMap;
+@use "./maps" as colorMap;
+
+@mixin apply_vars($var) {
+  @each $key, $value in $var {
+    --#{$key}: #{$value};
+  }
+}
+
+@mixin mq($breaks_key) {
+  $breakpoint: map.get(breakMap.$breaks, $breaks_key);
+
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}

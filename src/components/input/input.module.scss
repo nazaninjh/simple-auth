@@ -1,0 +1,20 @@
+.input-group {
+  display: grid;
+  row-gap: 0.5rem;
+
+  > input {
+    outline: none;
+
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+
+    border: 1px solid var(--neutral-clr);
+    caret-color: var(--neutral-clr);
+    &.error {
+      border: 1px solid var(--error-clr);
+    }
+    &.success {
+      border: 1px solid var(--primary-clr);
+    }
+  }
+}
