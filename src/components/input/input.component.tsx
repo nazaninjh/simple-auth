@@ -33,7 +33,7 @@ const InputComponent = (params: IParams) => {
         onBlur={(e) => onBlur?.(e.target.value)}
         onChange={(e) => onChange?.(e.target.value)}
         className={clsx(
-          errorMsg ? styles.error : errorMsg === null ? styles.success : ""
+          errorMsg ? styles.error : errorMsg === null ? styles.success : "",
         )}
       />
       {errorMsg && <p className={styles.error}>{errorMsg}</p>}

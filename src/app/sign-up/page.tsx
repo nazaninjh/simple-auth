@@ -1,14 +1,12 @@
-"use client";
-
+import SignupComponent from "@/components/signup/signup.component";
+import WrapperComponent from "@/components/wrapper/wrapper.component";
 import { AuthProvider } from "@/providers/auth.provider";
 
-import { DashboardComponent } from "@/components/dashboard/dashboard.component";
-import WrapperComponent from "@/components/wrapper/wrapper.component";
 const page = () => {
   return (
     <AuthProvider>
       <WrapperComponent>
-        <DashboardComponent />
+        <SignupComponent />
       </WrapperComponent>
     </AuthProvider>
   );

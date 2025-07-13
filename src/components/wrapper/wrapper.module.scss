@@ -1,0 +1,4 @@
+@use "./../../styles/placeholders";
+.main {
+  @extend %main-wrapper;
+}

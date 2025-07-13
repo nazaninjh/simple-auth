@@ -3,15 +3,15 @@ import LoginComponent from "@/components/login/login.component";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import styles from "./page.module.scss";
 import { AuthProvider } from "@/providers/auth.provider";
+import WrapperComponent from "@/components/wrapper/wrapper.component";
 const page = () => {
   return (
     <AuthProvider>
-      <main className={styles.main}>
+      <WrapperComponent>
         <ToastContainer />
         <LoginComponent />
-      </main>
+      </WrapperComponent>
     </AuthProvider>
   );
 };

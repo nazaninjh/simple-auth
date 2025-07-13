@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   if (!username || !password) {
     return NextResponse.json(
       { error: "Username and password are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
   const user = db.results.find(
     (user) =>
-      user.login.username === username && user.login.password === password
+      user.login.username === username && user.login.password === password,
   );
 
   if (!user) {

@@ -12,7 +12,7 @@ export const DashboardComponent = () => {
 
   const generateName = (
     title: string | undefined,
-    name: string | undefined
+    name: string | undefined,
   ) => {
     if (!title || !name) return;
     return title === "Mrs" ? `خانم ${name}` : `آقای ${name}`;
