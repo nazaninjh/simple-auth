@@ -11,7 +11,7 @@ const FormComponent = ({
   children: React.ReactNode;
   title: string;
   subTitle: string;
-  onSubmit: (e: FormEvent) => Promise<void>;
+  onSubmit?: (e: FormEvent) => Promise<void>;
 }) => {
   return (
     <form className={styles.form} onSubmit={onSubmit}>
