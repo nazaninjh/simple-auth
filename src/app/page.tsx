@@ -1,4 +1,4 @@
-import LoginComponent from "@/components/login/login.component";
+import LoginComponent from "@/components/auth/login/login.component";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

@@ -107,7 +107,7 @@ function useLoginLogic() {
       password: loginState.password,
     };
     try {
-      const res = await fetch("/api/log-in", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         body: JSON.stringify(reqBody),
         headers: {
@@ -129,7 +129,7 @@ function useLoginLogic() {
     }
   };
 
-  const debouncedCheck = useDebounce(checkValidity, 500);
+  const debouncedCheck = useDebounce(checkValidity, 200);
   const debouncedStateSet = useDebounce((type: keyof IState, val: string) => {
     setLoginState((prev) => ({
       ...prev,
