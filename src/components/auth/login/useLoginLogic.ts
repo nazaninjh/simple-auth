@@ -4,8 +4,9 @@ import z from "zod";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useAuth } from "@/providers/auth.provider";
 import { toast } from "react-toastify";
+import useDebouncedStateSetter from "@/hooks/useDebouncedStateSetter";
 
-const ILoginState = z.object({
+export const ILoginState = z.object({
   username: z.string().min(1, {
     message: "نام کاربری نباید خالی باشد!",
   }),
@@ -130,13 +131,7 @@ function useLoginLogic() {
   };
 
   const debouncedCheck = useDebounce(checkValidity, 200);
-  const debouncedStateSet = useDebounce((type: keyof IState, val: string) => {
-    setLoginState((prev) => ({
-      ...prev,
-      [type]: val,
-    }));
-  }, 100);
-
+  const debouncedStateSetter = useDebouncedStateSetter(100, setLoginState);
   useEffect(() => {
     if (serverError.state) {
       toast.error(serverError.msg, {
@@ -148,9 +143,10 @@ function useLoginLogic() {
   return {
     loginState,
     zodErrors,
+    setZodErrors,
     handleSubmit,
     debouncedCheck,
-    debouncedStateSet,
+    debouncedStateSetter,
   };
 }
 

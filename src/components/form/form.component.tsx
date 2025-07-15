@@ -2,7 +2,7 @@ import React, { FormEvent } from "react";
 import styles from "./form.module.scss";
 
 import IcRoundCallMissedOutgoing from "@/assets/icons/IcRoundCallMissedOutgoing";
-const FormComponent = ({
+export const FormComponent = ({
   children,
   title,
   subTitle,

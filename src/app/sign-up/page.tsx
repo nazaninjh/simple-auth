@@ -1,4 +1,4 @@
-import SignupComponent from "@/components/signup/signup.component";
+import SignupComponent from "@/components/auth/login/signup/signup.component";
 import WrapperComponent from "@/components/wrapper/wrapper.component";
 import { AuthProvider } from "@/providers/auth.provider";
 
