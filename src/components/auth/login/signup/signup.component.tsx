@@ -44,7 +44,7 @@ const SignupComponent = () => {
         delay: 200,
       });
     },
-    [] // or add deps if needed
+    [setZodErrors]
   );
   const inputs = useMemo(() => {
     return [
@@ -94,6 +94,7 @@ const SignupComponent = () => {
               id={item.id}
               type={item.type}
               onChange={item.onChange}
+              onBlur={item.onBlur}
               errorMsg={item.errorMsg}
             />
           );
