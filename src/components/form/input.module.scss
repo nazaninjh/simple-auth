@@ -12,9 +12,11 @@
     caret-color: var(--neutral-clr);
     &.error {
       border: 1px solid var(--error-clr);
+      caret-color: var(--error-clr);
     }
     &.success {
       border: 1px solid var(--primary-clr);
+      caret-color: var(--primary-clr);
     }
   }
 

@@ -1,11 +1,11 @@
 "use client";
 
 import { useAuth } from "@/providers/auth.provider";
-import CardParentComponent from "../card-parent/cardParent.component";
+import CardParentComponent from "../shared/card-parent/cardParent.component";
 
-import ButtonComponent from "../button/button.component";
+import ButtonComponent from "../shared/button/button.component";
 import styles from "./dashboard.module.scss";
-import IcBaselineAccountCircle from "./IcBaselineAccountCircle";
+import IcBaselineAccountCircle from "../../assets/icons/IcBaselineAccountCircle";
 
 export const DashboardComponent = () => {
   const { user, logout } = useAuth();
