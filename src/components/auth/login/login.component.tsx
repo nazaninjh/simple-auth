@@ -38,7 +38,7 @@ const LoginComponent = () => {
 
       debouncedStateSetter(type, val);
     },
-    [debouncedStateSetter, setZodErrors]
+    [debouncedStateSetter, setZodErrors],
   );
 
   const inputs = useMemo(() => {

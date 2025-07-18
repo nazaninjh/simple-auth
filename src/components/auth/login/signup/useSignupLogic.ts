@@ -1,6 +1,9 @@
 import useDebouncedStateSetter from "@/hooks/useDebouncedStateSetter";
 
-import { useState } from "react";
+import { useAuth } from "@/providers/auth.provider";
+
+import { FormEvent, useState } from "react";
+import { toast } from "react-toastify";
 import z from "zod";
 
 export const ISignupState = z.object({
@@ -38,6 +41,8 @@ export const ISignupState = z.object({
 export type IState = z.infer<typeof ISignupState>;
 
 const useSignupLogic = () => {
+  const { setUser } = useAuth();
+
   const [signupState, setSignupState] = useState<IState>({
     username: "",
     password: "",
@@ -57,7 +62,76 @@ const useSignupLogic = () => {
     email: null,
   });
 
-  // const { serverError, setServerError } = useServerError();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const values = {
+      username:
+        formData.get("username")?.toString().trim() || signupState.username,
+      password:
+        formData.get("password")?.toString().trim() || signupState.password,
+      phone: formData.get("phone")?.toString().trim() || signupState.phone,
+      email: formData.get("email")?.toString().trim() || signupState.email,
+    };
+
+    console.log(values);
+
+    const parsed = ISignupState.safeParse(values);
+
+    if (parsed.success) {
+      setZodErrors({
+        username: null,
+        password: null,
+        phone: null,
+        email: null,
+      });
+    } else {
+      const zodErr = z.treeifyError(parsed.error).properties ?? {};
+
+      const fieldList = ["password", "username", "email", "phone"] as const;
+      for (const field of fieldList) {
+        const errorField = zodErr[field];
+        if (errorField && errorField.errors) {
+          setZodErrors((prev) => ({
+            ...prev,
+            [field]: errorField.errors.toString(),
+          }));
+          return;
+        }
+      }
+    }
+
+    try {
+      const res = await fetch("/api/users/signup", {
+        method: "POST",
+        body: JSON.stringify(values),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+
+        toast.success("با موفقیت ثبت نام شدید.", {
+          position: "top-center",
+        });
+        setUser(data.savedUser);
+      } else if (res.status === 400) {
+        toast.error(
+          "این کاربر از قبل وجود دارد، شماره و ایمیل را دوباره وارد کنید.",
+          {
+            position: "bottom-center",
+          },
+        );
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const debouncedStateSetter = useDebouncedStateSetter(100, setSignupState);
 
@@ -65,6 +139,7 @@ const useSignupLogic = () => {
     setZodErrors,
     zodErrors,
     debouncedStateSetter,
+    handleSubmit,
   };
 };
 

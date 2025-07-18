@@ -10,14 +10,6 @@ import IcBaselineAccountCircle from "../../assets/icons/IcBaselineAccountCircle"
 export const DashboardComponent = () => {
   const { user, logout } = useAuth();
 
-  const generateName = (
-    title: string | undefined,
-    name: string | undefined,
-  ) => {
-    if (!title || !name) return;
-    return title === "Mrs" ? `خانم ${name}` : `آقای ${name}`;
-  };
-
   return (
     <CardParentComponent
       customStyle={{
@@ -32,7 +24,7 @@ export const DashboardComponent = () => {
 
         <div className={styles.texts}>
           <span>سلام</span>
-          <span>{generateName(user?.title, user?.firstName)}</span>
+          {user && user.username ? user.username : ""}
           <span>خوش آمدید.</span>
         </div>
         <ButtonComponent content=" خروج از حساب" onClick={logout} />

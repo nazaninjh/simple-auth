@@ -5,7 +5,7 @@ type StateType = Record<string, string | null>;
 
 function useDebouncedStateSetter<T extends StateType, K extends keyof T>(
   delay: number,
-  setState: Dispatch<SetStateAction<T>>
+  setState: Dispatch<SetStateAction<T>>,
 ) {
   const debouncedStateSetter = useDebounce(
     useCallback(
@@ -15,9 +15,9 @@ function useDebouncedStateSetter<T extends StateType, K extends keyof T>(
           [key]: val,
         }));
       },
-      [setState]
+      [setState],
     ),
-    delay
+    delay,
   );
 
   return debouncedStateSetter;

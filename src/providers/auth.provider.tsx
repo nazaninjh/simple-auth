@@ -10,9 +10,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 
 interface IUser {
-  title: string;
-  firstName: string;
-  lastName: string;
+  username: string;
 }
 
 interface AuthContextType {

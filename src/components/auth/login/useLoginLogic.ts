@@ -108,7 +108,7 @@ function useLoginLogic() {
       password: loginState.password,
     };
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/users/login", {
         method: "POST",
         body: JSON.stringify(reqBody),
         headers: {
