@@ -90,7 +90,7 @@ const LoginComponent = () => {
       </FormComponent>
       <div className={styles["signup-container"]}>
         <span>ثبت نام نکرده اید؟</span>
-        <Link href="/sign-up">ثبت نام</Link>
+        <Link href="/signup">ثبت نام</Link>
       </div>
     </CardParentComponent>
   );

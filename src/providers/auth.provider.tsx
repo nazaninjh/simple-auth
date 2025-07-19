@@ -8,6 +8,8 @@ import {
   ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { axiosCustom } from "@/axios/axiosConfig";
+import { toast } from "react-toastify";
 
 interface IUser {
   username: string;
@@ -58,9 +60,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserState(newUser);
   };
 
-  const logout = () => {
-    sessionStorage.removeItem("user");
-    setUserState(null);
+  const logout = async () => {
+    try {
+      const res = await axiosCustom.get("/users/logout");
+      if (res.status === 200) {
+        sessionStorage.removeItem("user");
+        setUserState(null);
+        toast.success("با موفقیت خارج شدید.", {
+          position: "top-center",
+        });
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.message, {
+        position: "bottom-center",
+      });
+    }
+
     router.push("/");
   };
 
