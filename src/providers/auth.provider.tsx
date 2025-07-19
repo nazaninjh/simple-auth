@@ -12,7 +12,10 @@ import { axiosCustom } from "@/axios/axiosConfig";
 import { toast } from "react-toastify";
 
 interface IUser {
+  _id: string;
   username: string;
+  email: string;
+  phone: string;
 }
 
 interface AuthContextType {
@@ -28,17 +31,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
+    console.log(user);
+  }, [user]);
+  useEffect(() => {
+    (async function fetchUser() {
       try {
-        const parsedUser = JSON.parse(storedUser) as IUser;
-        setUserState(parsedUser);
-      } catch {
-        console.error("Invalid user session");
+        const res = await axiosCustom.get("/users/extract-data-from-token");
+
+        setUser(res.data.payload);
+        return;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        console.log(error.message);
       }
-    }
+    })();
+
     setIsAuthChecked(true);
   }, []);
   useEffect(() => {
@@ -46,17 +55,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (user && pathname !== "/dashboard") {
       router.push("/dashboard");
-    } else if (!user && pathname === "/dashboard") {
-      router.push("/");
     }
   }, [user, pathname, router, isAuthChecked]);
 
   const setUser = (newUser: IUser | null) => {
-    if (newUser) {
-      sessionStorage.setItem("user", JSON.stringify(newUser));
-    } else {
-      sessionStorage.removeItem("user");
-    }
     setUserState(newUser);
   };
 
