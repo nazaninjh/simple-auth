@@ -9,7 +9,7 @@ export async function GET() {
       },
       { status: 200 }
     );
-    response.cookies.set("token", "", { httpOnly: true });
+    response.cookies.set("accessToken", "", { httpOnly: true });
     return response;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

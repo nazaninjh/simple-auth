@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
   // checking for required fields happens automatically
   const reqBody = await req.json();
-  const { username, password } = reqBody;
+  const { username, password, rememberMe } = reqBody;
 
   try {
     const user = await User.findOne({ username });
@@ -31,12 +31,17 @@ export async function POST(req: NextRequest) {
       phone: user.phone,
       email: user.email,
     };
-    const token = generateToken({
+    const accessToken = generateToken({
       payload: tokenPayload,
       secret: process.env.TOKEN_SECRET!,
-      expireTime: "1d",
+      expireTime: "15m",
     });
 
+    const refreshToken = generateToken({
+      payload: tokenPayload,
+      secret: process.env.REFRESH_TOKEN_SECRET!,
+      expireTime: rememberMe ? "5d" : "1d",
+    });
     const response = NextResponse.json({
       message: "Login Successful",
       success: true,
@@ -44,8 +49,18 @@ export async function POST(req: NextRequest) {
         username: user.username,
       },
     });
-    response.cookies.set("token", token, {
+    response.cookies.set("accessToken", accessToken, {
       httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 60 * 15,
+    });
+
+    response.cookies.set("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: rememberMe ? 60 * 60 * 24 * 5 : 60 * 60 * 24,
     });
 
     return response;

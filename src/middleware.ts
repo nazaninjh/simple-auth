@@ -4,17 +4,15 @@ export function middleware(req: NextRequest) {
   const currentPath = req.nextUrl.pathname;
   const isPublicPath = currentPath === "/" || currentPath === "/signup";
 
-  const token = req.cookies.get("token")?.value || "";
-  console.log("token==", token);
+  const accessToken = req.cookies.get("accessToken")?.value;
 
-  if (isPublicPath && token) {
+  if (isPublicPath && accessToken) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
   }
-  if (!isPublicPath && !token) {
-    return NextResponse.redirect(new URL("/", req.nextUrl));
-  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/dashboard", "/signup"],
+  matcher: ["/", "/signup", "/dashboard"],
 };

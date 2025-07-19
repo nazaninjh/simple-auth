@@ -44,12 +44,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        console.log(error.message);
+        console.log(error);
+
+        if (error.status === 401) {
+          try {
+            const refreshRes = await axiosCustom.post("/users/refresh");
+
+            if (refreshRes.status === 200) {
+              const res = await axiosCustom.get(
+                "/users/extract-data-from-token"
+              );
+              setUser(res.data.payload);
+              return;
+            }
+          } catch (refreshError) {
+            console.log("Refresh failed", refreshError);
+            router.push("/");
+          }
+        }
       }
     })();
 
     setIsAuthChecked(true);
-  }, []);
+  }, [router]);
   useEffect(() => {
     if (!isAuthChecked) return;
 

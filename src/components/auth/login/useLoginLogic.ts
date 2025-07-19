@@ -69,6 +69,7 @@ function useLoginLogic() {
       password: formData.get("password")
         ? formData.get("password")
         : loginState.password,
+      rememberMe: true,
     };
     const parsed = ILoginState.safeParse(values);
     if (parsed.success) {
