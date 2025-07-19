@@ -4,7 +4,7 @@ import FormComponent from "../../../form/form.component";
 import { InputComponent } from "../../../form/input.component";
 import ButtonComponent from "../../../shared/button/button.component";
 import CardParentComponent from "../../../shared/card-parent/cardParent.component";
-import checkFormInputValidity from "@/functions/checkFormInputValidity";
+import checkFormInputValidity from "@/functions/auth/checkFormInputValidity";
 import useSignupLogic, { ISignupState } from "./useSignupLogic";
 import z from "zod";
 
@@ -32,7 +32,7 @@ const SignupComponent = () => {
 
       debouncedStateSetter(type, val);
     },
-    [debouncedStateSetter, setZodErrors],
+    [debouncedStateSetter, setZodErrors]
   );
 
   const onBlur = useCallback(
@@ -45,7 +45,7 @@ const SignupComponent = () => {
         delay: 200,
       });
     },
-    [setZodErrors],
+    [setZodErrors]
   );
   const inputs = useMemo(() => {
     return [

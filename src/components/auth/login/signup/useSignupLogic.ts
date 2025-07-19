@@ -77,8 +77,6 @@ const useSignupLogic = () => {
       email: formData.get("email")?.toString().trim() || signupState.email,
     };
 
-    console.log(values);
-
     const parsed = ISignupState.safeParse(values);
 
     if (parsed.success) {
@@ -119,13 +117,14 @@ const useSignupLogic = () => {
         toast.success("با موفقیت ثبت نام شدید.", {
           position: "top-center",
         });
+
         setUser(data.savedUser);
       } else if (res.status === 400) {
         toast.error(
           "این کاربر از قبل وجود دارد، شماره و ایمیل را دوباره وارد کنید.",
           {
             position: "bottom-center",
-          },
+          }
         );
       }
     } catch (err) {

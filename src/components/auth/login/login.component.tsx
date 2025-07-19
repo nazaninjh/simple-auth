@@ -1,13 +1,15 @@
 "use client";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import z from "zod";
+import checkFormInputValidity from "@/functions/auth/checkFormInputValidity";
 import FormComponent from "@/components/form/form.component";
+import { InputComponent } from "@/components/form/input.component";
 import CardParentComponent from "../../shared/card-parent/cardParent.component";
 import ButtonComponent from "../../shared/button/button.component";
-import { InputComponent } from "@/components/form/input.component";
 import useLoginLogic, { ILoginState } from "./useLoginLogic";
 
-import z from "zod";
-import checkFormInputValidity from "@/functions/checkFormInputValidity";
+import styles from "./login.module.scss";
 
 type LoginValues = z.infer<typeof ILoginState>;
 
@@ -38,7 +40,7 @@ const LoginComponent = () => {
 
       debouncedStateSetter(type, val);
     },
-    [debouncedStateSetter, setZodErrors],
+    [debouncedStateSetter, setZodErrors]
   );
 
   const inputs = useMemo(() => {
@@ -59,22 +61,8 @@ const LoginComponent = () => {
         onChange: (val: string) => onChangeFn(val, "password"),
         errorMsg: zodErrors.password,
       },
-      {
-        title: "شماره موبایل (اختیاری): ",
-        id: "phone",
-        type: "tel",
-        onBlur: (val: string) => debouncedCheck("phone", val),
-        onChange: (val: string) => onChangeFn(val, "phone"),
-        errorMsg: zodErrors.phone,
-      },
     ];
-  }, [
-    debouncedCheck,
-    onChangeFn,
-    zodErrors.password,
-    zodErrors.phone,
-    zodErrors.username,
-  ]);
+  }, [debouncedCheck, onChangeFn, zodErrors.password, zodErrors.username]);
 
   return (
     <CardParentComponent>
@@ -100,6 +88,10 @@ const LoginComponent = () => {
 
         <ButtonComponent content="ورود" type="submit" />
       </FormComponent>
+      <div className={styles["signup-container"]}>
+        <span>ثبت نام نکرده اید؟</span>
+        <Link href="/sign-up">ثبت نام</Link>
+      </div>
     </CardParentComponent>
   );
 };

@@ -13,13 +13,6 @@ export const ILoginState = z.object({
   password: z.string().min(1, {
     message: "کلمه عبور نباید خالی باشد!",
   }),
-  phone: z
-    .string()
-    .regex(/^((0)?9\d{9}|989\d{9})$/, {
-      message: "شماره موبایل باید طبق فرمت شماره های ایران باشد",
-    })
-    .optional()
-    .or(z.literal("")),
 });
 
 export type IState = z.infer<typeof ILoginState>;
@@ -30,17 +23,14 @@ function useLoginLogic() {
   const [loginState, setLoginState] = useState<IState>({
     username: "",
     password: "",
-    phone: "",
   });
 
   const [zodErrors, setZodErrors] = useState<{
     username: string | null;
     password: string | null;
-    phone: string | null;
   }>({
     username: null,
     password: null,
-    phone: null,
   });
 
   const [serverError, setServerError] = useState({
@@ -68,14 +58,23 @@ function useLoginLogic() {
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const parsed = ILoginState.safeParse(loginState);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const values = {
+      username: formData.get("username")
+        ? formData.get("username")
+        : loginState.username,
+      password: formData.get("password")
+        ? formData.get("password")
+        : loginState.password,
+    };
+    const parsed = ILoginState.safeParse(values);
     if (parsed.success) {
       setZodErrors({
         username: null,
         password: null,
-        phone: null,
       });
     } else {
       const zodErrPass = z.treeifyError(parsed.error).properties?.password;
@@ -103,14 +102,10 @@ function useLoginLogic() {
       msg: "",
     });
 
-    const reqBody = {
-      username: loginState.username,
-      password: loginState.password,
-    };
     try {
       const res = await fetch("/api/users/login", {
         method: "POST",
-        body: JSON.stringify(reqBody),
+        body: JSON.stringify(values),
         headers: {
           "Content-Type": "application/json",
         },
@@ -118,7 +113,7 @@ function useLoginLogic() {
 
       if (res.ok) {
         const data = await res.json();
-        setUser(data);
+        setUser(data.savedUser);
       } else if (res.status === 401) {
         setServerError({
           state: true,

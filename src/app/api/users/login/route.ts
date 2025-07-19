@@ -1,51 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbJson from "@/db/db.json";
-import { IDataBase } from "@/types/db.type";
 
-const db = dbJson as IDataBase;
+import { connect } from "@/dbConfig/dbConfig";
+import User from "@/models/userModel";
 
-export async function GET() {
-  return NextResponse.json(db.results);
-}
+import bcryptjs from "bcryptjs";
 
-export async function POST(request: NextRequest) {
-  const { username, password } = await request.json();
+import { generateToken } from "@/helpers/generateToken";
 
-  if (!username || !password) {
-    return NextResponse.json(
-      { error: "Username and password are required" },
-      { status: 400 },
-    );
-  }
+connect();
+export async function POST(req: NextRequest) {
+  // login for admin later
 
-  //   admin
-  if (
-    username.toLowerCase() === "admin" &&
-    password.toLowerCase() === "admin"
-  ) {
-    const safeUser = {
-      title: dbJson.results[0].name.title,
-      firstName: dbJson.results[0].name.first,
-      lastName: dbJson.results[0].name.last,
+  // checking for required fields happens automatically
+  const reqBody = await req.json();
+  const { username, password } = reqBody;
+
+  try {
+    const user = await User.findOne({ username });
+    const validPassword = await bcryptjs.compare(password, user.password);
+    if (!validPassword) {
+      return NextResponse.json(
+        { error: "Invalid Username or Password" },
+        { status: 400 }
+      );
+    }
+    // generate token
+    const tokenPayload = {
+      id: user._id,
+      username: user.username,
+      phone: user.phone,
+      email: user.email,
     };
+    const token = generateToken({
+      payload: tokenPayload,
+      secret: process.env.TOKEN_SECRET!,
+      expireTime: "1d",
+    });
 
-    return NextResponse.json(safeUser);
+    const response = NextResponse.json({
+      message: "Login Successful",
+      success: true,
+      savedUser: {
+        username: user.username,
+      },
+    });
+    response.cookies.set("token", token, {
+      httpOnly: true,
+    });
+
+    return response;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
-  const user = db.results.find(
-    (user) =>
-      user.login.username === username && user.login.password === password,
-  );
-
-  if (!user) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
-
-  const safeUser = {
-    title: user.name.title,
-    firstName: user.name.first,
-    lastName: user.name.last,
-  };
-
-  return NextResponse.json(safeUser);
 }
