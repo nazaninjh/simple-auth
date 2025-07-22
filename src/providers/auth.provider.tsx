@@ -31,14 +31,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
+
   useEffect(() => {
     (async function fetchUser() {
       try {
         const res = await axiosCustom.get("/users/extract-data-from-token");
-
         setUser(res.data.payload);
         return;
 
@@ -59,7 +56,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             }
           } catch (refreshError) {
             console.log("Refresh failed", refreshError);
-            router.push("/");
+            const isPrivate = pathname.startsWith("/dashboard");
+            if (isPrivate) {
+              router.push("/");
+            }
           }
         }
       }
