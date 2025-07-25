@@ -1,15 +1,15 @@
 "use client";
 
 import { AuthProvider } from "@/providers/auth.provider";
-import styles from "./page.module.scss";
 
 import { DashboardComponent } from "@/components/dashboard/dashboard.component";
+import WrapperComponent from "@/components/wrapper/wrapper.component";
 const page = () => {
   return (
     <AuthProvider>
-      <main className={styles.main}>
+      <WrapperComponent>
         <DashboardComponent />
-      </main>
+      </WrapperComponent>
     </AuthProvider>
   );
 };

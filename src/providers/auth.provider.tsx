@@ -8,11 +8,14 @@ import {
   ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { axiosCustom } from "@/axios/axiosConfig";
+import { toast } from "react-toastify";
 
 interface IUser {
-  title: string;
-  firstName: string;
-  lastName: string;
+  _id: string;
+  username: string;
+  email: string;
+  phone: string;
 }
 
 interface AuthContextType {
@@ -30,39 +33,70 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
 
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
+    (async function fetchUser() {
       try {
-        const parsedUser = JSON.parse(storedUser) as IUser;
-        setUserState(parsedUser);
-      } catch {
-        console.error("Invalid user session");
+        const res = await axiosCustom.get("/users/extract-data-from-token");
+        setUser(res.data.payload);
+        return;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        console.log(error);
+
+        if (error.status === 401) {
+          try {
+            const refreshRes = await axiosCustom.post("/users/refresh");
+
+            if (refreshRes.status === 200) {
+              const res = await axiosCustom.get(
+                "/users/extract-data-from-token"
+              );
+              setUser(res.data.payload);
+              return;
+            }
+          } catch (refreshError) {
+            console.log("Refresh failed", refreshError);
+            const isPrivate = pathname.startsWith("/dashboard");
+            if (isPrivate) {
+              router.push("/");
+            }
+          }
+        }
       }
-    }
+    })();
+
     setIsAuthChecked(true);
-  }, []);
+  }, [router]);
   useEffect(() => {
     if (!isAuthChecked) return;
 
     if (user && pathname !== "/dashboard") {
       router.push("/dashboard");
-    } else if (!user && pathname === "/dashboard") {
-      router.push("/");
     }
   }, [user, pathname, router, isAuthChecked]);
 
   const setUser = (newUser: IUser | null) => {
-    if (newUser) {
-      sessionStorage.setItem("user", JSON.stringify(newUser));
-    } else {
-      sessionStorage.removeItem("user");
-    }
     setUserState(newUser);
   };
 
-  const logout = () => {
-    sessionStorage.removeItem("user");
-    setUserState(null);
+  const logout = async () => {
+    try {
+      const res = await axiosCustom.get("/users/logout");
+      if (res.status === 200) {
+        sessionStorage.removeItem("user");
+        setUserState(null);
+        toast.success("با موفقیت خارج شدید.", {
+          position: "top-center",
+        });
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.message, {
+        position: "bottom-center",
+      });
+    }
+
     router.push("/");
   };
 

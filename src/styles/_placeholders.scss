@@ -1,5 +1,5 @@
-@use "./../../styles//mixins" as mixin;
-.main {
+@use "./../styles/mixins" as mixin;
+%main-wrapper {
   height: 100vh;
   height: 100dvh;
   width: 100%;

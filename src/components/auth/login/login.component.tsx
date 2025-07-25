@@ -1,23 +1,47 @@
 "use client";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import z from "zod";
+import checkFormInputValidity from "@/functions/auth/checkFormInputValidity";
 import FormComponent from "@/components/form/form.component";
 import { InputComponent } from "@/components/form/input.component";
-import useLoginLogic from "./useLoginLogic";
-import ButtonComponent from "../../shared/button/button.component";
-
 import CardParentComponent from "../../shared/card-parent/cardParent.component";
-import { useEffect, useMemo, useRef } from "react";
+import ButtonComponent from "../../shared/button/button.component";
+import useLoginLogic, { ILoginState } from "./useLoginLogic";
+
+import styles from "./login.module.scss";
+
+type LoginValues = z.infer<typeof ILoginState>;
 
 const LoginComponent = () => {
-  const { debouncedCheck, debouncedStateSet, zodErrors, handleSubmit } =
-    useLoginLogic();
+  const {
+    debouncedCheck,
+    debouncedStateSetter,
+    zodErrors,
+    setZodErrors,
+    handleSubmit,
+  } = useLoginLogic();
   const userNameRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    console.log(userNameRef);
-
     if (!userNameRef.current) return;
     userNameRef.current.focus();
   }, []);
+
+  const onChangeFn = useCallback(
+    <K extends keyof LoginValues>(val: string, type: K) => {
+      checkFormInputValidity({
+        zodObject: ILoginState,
+        zodKey: type,
+        newValue: val,
+        setZodErrors,
+        delay: 200,
+      });
+
+      debouncedStateSetter(type, val);
+    },
+    [debouncedStateSetter, setZodErrors]
+  );
 
   const inputs = useMemo(() => {
     return [
@@ -26,10 +50,7 @@ const LoginComponent = () => {
         id: "username",
         type: "text",
         onBlur: (val: string) => debouncedCheck("username", val),
-        onChange: (val: string) => {
-          debouncedCheck("username", val);
-          debouncedStateSet("username", val);
-        },
+        onChange: (val: string) => onChangeFn(val, "username"),
         errorMsg: zodErrors.username,
       },
       {
@@ -37,25 +58,11 @@ const LoginComponent = () => {
         id: "password",
         type: "password",
         onBlur: (val: string) => debouncedCheck("password", val),
-        onChange: (val: string) => {
-          debouncedCheck("password", val);
-          debouncedStateSet("password", val);
-        },
+        onChange: (val: string) => onChangeFn(val, "password"),
         errorMsg: zodErrors.password,
       },
-      {
-        title: "شماره موبایل (اختیاری): ",
-        id: "phone",
-        type: "tel",
-        onBlur: (val: string) => debouncedCheck("phone", val),
-        onChange: (val: string) => {
-          debouncedCheck("phone", val);
-          debouncedStateSet("phone", val);
-        },
-        errorMsg: zodErrors.phone,
-      },
     ];
-  }, [debouncedCheck, debouncedStateSet, zodErrors]);
+  }, [debouncedCheck, onChangeFn, zodErrors.password, zodErrors.username]);
 
   return (
     <CardParentComponent>
@@ -81,6 +88,10 @@ const LoginComponent = () => {
 
         <ButtonComponent content="ورود" type="submit" />
       </FormComponent>
+      <div className={styles["signup-container"]}>
+        <span>ثبت نام نکرده اید؟</span>
+        <Link href="/signup">ثبت نام</Link>
+      </div>
     </CardParentComponent>
   );
 };
