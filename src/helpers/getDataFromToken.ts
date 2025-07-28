@@ -5,7 +5,7 @@ export const getDataFromToken = async (req: NextRequest) => {
     const token = req.cookies.get("accessToken")?.value || "";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const decodedToken: any = jwt.verify(token, process.env.TOKEN_SECRET!);
-    return decodedToken.id;
+    return decodedToken;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new Error("Unauthorized: " + error.message);

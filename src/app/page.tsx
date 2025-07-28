@@ -5,14 +5,17 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { AuthProvider } from "@/providers/auth.provider";
 import WrapperComponent from "@/components/wrapper/wrapper.component";
+import ReactRouterProvider from "@/providers/reactRouter.provider";
 const page = () => {
   return (
-    <AuthProvider>
-      <WrapperComponent>
-        <ToastContainer />
-        <LoginComponent />
-      </WrapperComponent>
-    </AuthProvider>
+    <ReactRouterProvider>
+      <AuthProvider>
+        <WrapperComponent>
+          <ToastContainer />
+          <LoginComponent />
+        </WrapperComponent>
+      </AuthProvider>
+    </ReactRouterProvider>
   );
 };
 

@@ -12,10 +12,10 @@ import { axiosCustom } from "@/axios/axiosConfig";
 import { toast } from "react-toastify";
 
 interface IUser {
-  _id: string;
+  _id?: string;
   username: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
 }
 
 interface AuthContextType {
@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<IUser | null>(null);
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -49,8 +49,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             if (refreshRes.status === 200) {
               const res = await axiosCustom.get(
-                "/users/extract-data-from-token"
+                "/users/extract-data-from-token",
               );
+
               setUser(res.data.payload);
               return;
             }
@@ -64,16 +65,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     })();
+  }, [pathname, router]);
 
-    setIsAuthChecked(true);
-  }, [router]);
   useEffect(() => {
-    if (!isAuthChecked) return;
-
     if (user && pathname !== "/dashboard") {
       router.push("/dashboard");
     }
-  }, [user, pathname, router, isAuthChecked]);
+  }, [user, pathname, router]);
 
   const setUser = (newUser: IUser | null) => {
     setUserState(newUser);

@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     const decoded = jwt.verify(
       refreshToken,
-      process.env.REFRESH_TOKEN_SECRET!
+      process.env.REFRESH_TOKEN_SECRET!,
     ) as jwt.JwtPayload;
 
     const newAccessToken = generateToken({
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json(
       { message: "Access token refreshed" },
-      { status: 201 }
+      { status: 201 },
     );
 
     response.cookies.set("accessToken", newAccessToken, {
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: "Invalid refresh token" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 }

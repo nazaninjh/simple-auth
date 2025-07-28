@@ -1,6 +1,9 @@
+import signup from "@/app/api/client/signup/signup";
+import setZodFieldErrors from "@/functions/auth/setZodFieldErrors";
 import useDebouncedStateSetter from "@/hooks/useDebouncedStateSetter";
 
 import { useAuth } from "@/providers/auth.provider";
+import { useMutation } from "@tanstack/react-query";
 
 import { FormEvent, useState } from "react";
 import { toast } from "react-toastify";
@@ -43,6 +46,29 @@ export type IState = z.infer<typeof ISignupState>;
 const useSignupLogic = () => {
   const { setUser } = useAuth();
 
+  const mutation = useMutation({
+    mutationFn: signup,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      toast.error(error.message, {
+        position: "bottom-center",
+      });
+    },
+    onSuccess: (data) => {
+      console.log(data);
+
+      toast.success("با موفقیت ثبت نام شدید.", {
+        position: "top-center",
+      });
+
+      if (data && typeof data === "object" && "savedUser" in data) {
+        console.log("saving...");
+
+        setUser({ username: data.savedUser as string });
+      }
+    },
+  });
+
   const [signupState, setSignupState] = useState<IState>({
     username: "",
     password: "",
@@ -50,12 +76,7 @@ const useSignupLogic = () => {
     email: "",
   });
 
-  const [zodErrors, setZodErrors] = useState<{
-    username: string | null;
-    password: string | null;
-    phone: string | null;
-    email: string | null;
-  }>({
+  const [zodErrors, setZodErrors] = useState<Record<string, string | null>>({
     username: null,
     password: null,
     phone: null,
@@ -79,57 +100,13 @@ const useSignupLogic = () => {
 
     const parsed = ISignupState.safeParse(values);
 
-    if (parsed.success) {
-      setZodErrors({
-        username: null,
-        password: null,
-        phone: null,
-        email: null,
-      });
-    } else {
-      const zodErr = z.treeifyError(parsed.error).properties ?? {};
+    setZodFieldErrors(
+      parsed,
+      ["password", "username", "email", "phone"],
+      setZodErrors,
+    );
 
-      const fieldList = ["password", "username", "email", "phone"] as const;
-      for (const field of fieldList) {
-        const errorField = zodErr[field];
-        if (errorField && errorField.errors) {
-          setZodErrors((prev) => ({
-            ...prev,
-            [field]: errorField.errors.toString(),
-          }));
-          return;
-        }
-      }
-    }
-
-    try {
-      const res = await fetch("/api/users/signup", {
-        method: "POST",
-        body: JSON.stringify(values),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-
-        toast.success("با موفقیت ثبت نام شدید.", {
-          position: "top-center",
-        });
-
-        setUser(data.savedUser);
-      } else if (res.status === 400) {
-        toast.error(
-          "این کاربر از قبل وجود دارد، شماره و ایمیل را دوباره وارد کنید.",
-          {
-            position: "bottom-center",
-          }
-        );
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    mutation.mutate(values);
   };
 
   const debouncedStateSetter = useDebouncedStateSetter(100, setSignupState);
@@ -139,6 +116,7 @@ const useSignupLogic = () => {
     zodErrors,
     debouncedStateSetter,
     handleSubmit,
+    isPending: mutation.isPending,
   };
 };
 

@@ -1,10 +1,13 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import z from "zod";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useAuth } from "@/providers/auth.provider";
 import { toast } from "react-toastify";
 import useDebouncedStateSetter from "@/hooks/useDebouncedStateSetter";
+import { useMutation } from "@tanstack/react-query";
+import { login } from "@/app/api/client/login/login";
+import { setZodFieldErrors } from "@/functions/auth/setZodFieldErrors";
 
 export const ILoginState = z.object({
   username: z.string().min(1, {
@@ -20,22 +23,29 @@ export type IState = z.infer<typeof ILoginState>;
 function useLoginLogic() {
   const { setUser } = useAuth();
 
+  const mutation = useMutation({
+    mutationFn: login,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      toast.error(error.message, {
+        position: "bottom-center",
+      });
+    },
+    onSuccess: (data: unknown) => {
+      if (data && typeof data === "object" && "savedUser" in data) {
+        setUser({ username: data.savedUser as string });
+      }
+    },
+  });
+
   const [loginState, setLoginState] = useState<IState>({
     username: "",
     password: "",
   });
 
-  const [zodErrors, setZodErrors] = useState<{
-    username: string | null;
-    password: string | null;
-  }>({
+  const [zodErrors, setZodErrors] = useState<Record<string, string | null>>({
     username: null,
     password: null,
-  });
-
-  const [serverError, setServerError] = useState({
-    state: false,
-    msg: "",
   });
 
   const checkValidity = <K extends keyof IState>(type: K, value: IState[K]) => {
@@ -62,6 +72,7 @@ function useLoginLogic() {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
+
     const values = {
       username: formData.get("username")
         ? formData.get("username")
@@ -72,69 +83,14 @@ function useLoginLogic() {
       rememberMe: true,
     };
     const parsed = ILoginState.safeParse(values);
-    if (parsed.success) {
-      setZodErrors({
-        username: null,
-        password: null,
-      });
-    } else {
-      const zodErrPass = z.treeifyError(parsed.error).properties?.password;
-      const zodErrUsername = z.treeifyError(parsed.error).properties?.username;
 
-      if (zodErrPass) {
-        setZodErrors({
-          ...zodErrors,
-          password: zodErrPass?.errors ? zodErrPass?.errors.toString() : "",
-        });
-        return;
-      }
-      if (zodErrUsername) {
-        setZodErrors({
-          ...zodErrors,
-          username: zodErrUsername?.errors
-            ? zodErrUsername?.errors.toString()
-            : "",
-        });
-        return;
-      }
-    }
-    setServerError({
-      state: false,
-      msg: "",
-    });
+    setZodFieldErrors(parsed, ["username", "password"], setZodErrors);
 
-    try {
-      const res = await fetch("/api/users/login", {
-        method: "POST",
-        body: JSON.stringify(values),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.savedUser);
-      } else if (res.status === 401) {
-        setServerError({
-          state: true,
-          msg: "نام کاربری یا کلمه عبور اشتباه است!",
-        });
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    mutation.mutate(values);
   };
 
   const debouncedCheck = useDebounce(checkValidity, 200);
   const debouncedStateSetter = useDebouncedStateSetter(100, setLoginState);
-  useEffect(() => {
-    if (serverError.state) {
-      toast.error(serverError.msg, {
-        position: "bottom-center",
-      });
-    }
-  }, [serverError]);
 
   return {
     loginState,
@@ -143,6 +99,7 @@ function useLoginLogic() {
     handleSubmit,
     debouncedCheck,
     debouncedStateSetter,
+    isPending: mutation.isPending,
   };
 }
 

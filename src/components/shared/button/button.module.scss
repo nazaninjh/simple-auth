@@ -16,4 +16,44 @@
     cursor: not-allowed;
     background-color: var(--disabled-clr);
   }
+  &.loading {
+    pointer-events: none;
+  }
+
+  .loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-inline-end: 0.5rem;
+    height: 1rem;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: white;
+    border-radius: 50%;
+    animation: bounce 0.6s infinite ease-in-out;
+  }
+
+  .dot:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  .dot:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
 }

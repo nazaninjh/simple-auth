@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (!validPassword) {
       return NextResponse.json(
         { error: "Invalid Username or Password" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     // generate token
@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json({
       message: "Login Successful",
       success: true,
+      status: 200,
       savedUser: {
         username: user.username,
       },

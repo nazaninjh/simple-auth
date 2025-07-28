@@ -20,6 +20,7 @@ const LoginComponent = () => {
     zodErrors,
     setZodErrors,
     handleSubmit,
+    isPending,
   } = useLoginLogic();
   const userNameRef = useRef<HTMLInputElement | null>(null);
 
@@ -40,7 +41,7 @@ const LoginComponent = () => {
 
       debouncedStateSetter(type, val);
     },
-    [debouncedStateSetter, setZodErrors]
+    [debouncedStateSetter, setZodErrors],
   );
 
   const inputs = useMemo(() => {
@@ -86,7 +87,7 @@ const LoginComponent = () => {
           );
         })}
 
-        <ButtonComponent content="ورود" type="submit" />
+        <ButtonComponent content="ورود" type="submit" isPending={isPending} />
       </FormComponent>
       <div className={styles["signup-container"]}>
         <span>ثبت نام نکرده اید؟</span>

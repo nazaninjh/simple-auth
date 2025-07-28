@@ -7,7 +7,7 @@ export async function GET() {
         message: "Logout successful",
         success: true,
       },
-      { status: 200 }
+      { status: 200 },
     );
     response.cookies.set("accessToken", "", { httpOnly: true });
     response.cookies.set("refreshToken", "", { httpOnly: true });

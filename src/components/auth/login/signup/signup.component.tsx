@@ -11,8 +11,13 @@ import z from "zod";
 type SignupValues = z.infer<typeof ISignupState>;
 
 const SignupComponent = () => {
-  const { setZodErrors, zodErrors, debouncedStateSetter, handleSubmit } =
-    useSignupLogic();
+  const {
+    setZodErrors,
+    zodErrors,
+    debouncedStateSetter,
+    handleSubmit,
+    isPending,
+  } = useSignupLogic();
   const userNameRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -32,7 +37,7 @@ const SignupComponent = () => {
 
       debouncedStateSetter(type, val);
     },
-    [debouncedStateSetter, setZodErrors]
+    [debouncedStateSetter, setZodErrors],
   );
 
   const onBlur = useCallback(
@@ -45,7 +50,7 @@ const SignupComponent = () => {
         delay: 200,
       });
     },
-    [setZodErrors]
+    [setZodErrors],
   );
   const inputs = useMemo(() => {
     return [
@@ -104,7 +109,11 @@ const SignupComponent = () => {
             />
           );
         })}
-        <ButtonComponent content="ثبت نام" type="submit" />
+        <ButtonComponent
+          content="ثبت نام"
+          type="submit"
+          isPending={isPending}
+        />
       </FormComponent>
     </CardParentComponent>
   );
