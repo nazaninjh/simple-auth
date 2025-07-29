@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { generateToken } from "@/helpers/generateToken";
+import { generateToken } from "@/helpers/server/generateToken";
 
 export async function POST(req: NextRequest) {
   const refreshToken = req.cookies.get("refreshToken")?.value;

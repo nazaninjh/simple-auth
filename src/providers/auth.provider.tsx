@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<IUser | null>(null);
-
+  const [isFetching, setIsFetching] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -57,21 +57,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             }
           } catch (refreshError) {
             console.log("Refresh failed", refreshError);
-            const isPrivate = pathname.startsWith("/dashboard");
-            if (isPrivate) {
-              router.push("/");
-            }
+          } finally {
+            setIsFetching(false);
           }
         }
       }
     })();
-  }, [pathname, router]);
+  }, []);
 
   useEffect(() => {
-    if (user && pathname !== "/dashboard") {
+    if (user && pathname !== "/dashboard" && !isFetching) {
       router.push("/dashboard");
+    } else if (!user && !isFetching && pathname === "/dashboard") {
+      router.push("/");
     }
-  }, [user, pathname, router]);
+  }, [user, pathname, router, isFetching]);
 
   const setUser = (newUser: IUser | null) => {
     setUserState(newUser);
@@ -81,8 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const res = await axiosCustom.get("/users/logout");
       if (res.status === 200) {
-        sessionStorage.removeItem("user");
-        setUserState(null);
+        setUser(null);
         toast.success("با موفقیت خارج شدید.", {
           position: "top-center",
         });

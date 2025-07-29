@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import "./globals.scss";
+import ReactRouterProvider from "@/providers/reactRouter.provider";
+import { AuthProvider } from "@/providers/auth.provider";
 
 export const metadata: Metadata = {
   title: "Authentication",
@@ -14,7 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa">
-      <body>{children}</body>
+      <body>
+        <ReactRouterProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ReactRouterProvider>
+      </body>
     </html>
   );
 }

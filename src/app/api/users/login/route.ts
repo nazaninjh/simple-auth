@@ -5,7 +5,7 @@ import User from "@/models/userModel";
 
 import bcryptjs from "bcryptjs";
 
-import { generateToken } from "@/helpers/generateToken";
+import { generateToken } from "@/helpers/server/generateToken";
 
 connect();
 export async function POST(req: NextRequest) {
