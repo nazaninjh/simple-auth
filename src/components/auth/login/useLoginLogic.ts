@@ -2,12 +2,13 @@
 import { FormEvent, useState } from "react";
 import z from "zod";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useAuth } from "@/providers/auth.provider";
+
 import { toast } from "react-toastify";
 import useDebouncedStateSetter from "@/hooks/useDebouncedStateSetter";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "@/app/api/client/login/login";
 import { setZodFieldErrors } from "@/functions/auth/setZodFieldErrors";
+import { useAuth } from "@/providers/auth.provider";
 
 export const ILoginState = z.object({
   username: z.string().min(1, {
@@ -21,8 +22,7 @@ export const ILoginState = z.object({
 export type IState = z.infer<typeof ILoginState>;
 
 function useLoginLogic() {
-  const { setUser } = useAuth();
-
+  const { refetchUser } = useAuth();
   const mutation = useMutation({
     mutationFn: login,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,10 +31,8 @@ function useLoginLogic() {
         position: "bottom-center",
       });
     },
-    onSuccess: (data: unknown) => {
-      if (data && typeof data === "object" && "savedUser" in data) {
-        setUser({ username: data.savedUser as string });
-      }
+    onSuccess: () => {
+      refetchUser();
     },
   });
 

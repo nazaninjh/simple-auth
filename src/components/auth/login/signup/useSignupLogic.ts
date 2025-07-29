@@ -1,8 +1,8 @@
 import signup from "@/app/api/client/signup/signup";
 import setZodFieldErrors from "@/functions/auth/setZodFieldErrors";
 import useDebouncedStateSetter from "@/hooks/useDebouncedStateSetter";
-
 import { useAuth } from "@/providers/auth.provider";
+
 import { useMutation } from "@tanstack/react-query";
 
 import { FormEvent, useState } from "react";
@@ -44,8 +44,7 @@ export const ISignupState = z.object({
 export type IState = z.infer<typeof ISignupState>;
 
 const useSignupLogic = () => {
-  const { setUser } = useAuth();
-
+  const { refetchUser } = useAuth();
   const mutation = useMutation({
     mutationFn: signup,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,18 +53,12 @@ const useSignupLogic = () => {
         position: "bottom-center",
       });
     },
-    onSuccess: (data) => {
-      console.log(data);
-
+    onSuccess: () => {
       toast.success("با موفقیت ثبت نام شدید.", {
         position: "top-center",
       });
 
-      if (data && typeof data === "object" && "savedUser" in data) {
-        console.log("saving...");
-
-        setUser({ username: data.savedUser as string });
-      }
+      refetchUser();
     },
   });
 
@@ -103,7 +96,7 @@ const useSignupLogic = () => {
     setZodFieldErrors(
       parsed,
       ["password", "username", "email", "phone"],
-      setZodErrors,
+      setZodErrors
     );
 
     mutation.mutate(values);

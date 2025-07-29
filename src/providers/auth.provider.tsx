@@ -4,101 +4,89 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   ReactNode,
+  useCallback,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { axiosCustom } from "@/axios/axiosConfig";
 import { toast } from "react-toastify";
-
-interface IUser {
-  _id?: string;
-  username: string;
-  email?: string;
-  phone?: string;
-}
+import { IUser } from "@/types/user.type";
+import fetchUserData from "@/helpers/client/fetchUserData";
 
 interface AuthContextType {
   user: IUser | null;
   setUser: (user: IUser | null) => void;
   logout: () => void;
+  refetchUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<IUser | null>(null);
-  const [isFetching, setIsFetching] = useState(true);
+  const [shouldRefetch, setShouldRefetch] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const didInit = useRef(false);
 
-  useEffect(() => {
-    (async function fetchUser() {
-      try {
-        const res = await axiosCustom.get("/users/extract-data-from-token");
-        setUser(res.data.payload);
-        return;
+  const fetchAndSetUser = useCallback(async () => {
+    const fetchedUser = await fetchUserData();
+    setUserState(fetchedUser);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.log(error);
-
-        if (error.status === 401) {
-          try {
-            const refreshRes = await axiosCustom.post("/users/refresh");
-
-            if (refreshRes.status === 200) {
-              const res = await axiosCustom.get(
-                "/users/extract-data-from-token",
-              );
-
-              setUser(res.data.payload);
-              return;
-            }
-          } catch (refreshError) {
-            console.log("Refresh failed", refreshError);
-          } finally {
-            setIsFetching(false);
-          }
-        }
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    if (user && pathname !== "/dashboard" && !isFetching) {
+    if (fetchedUser && !pathname.startsWith("/dashboard")) {
       router.push("/dashboard");
-    } else if (!user && !isFetching && pathname === "/dashboard") {
+    } else if (!fetchedUser && pathname.startsWith("/dashboard")) {
       router.push("/");
     }
-  }, [user, pathname, router, isFetching]);
+  }, [pathname, router]);
+
+  useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
+
+    fetchAndSetUser();
+  }, [fetchAndSetUser, pathname, router]);
+
+  useEffect(() => {
+    if (!shouldRefetch) return;
+
+    fetchAndSetUser().finally(() => {
+      setShouldRefetch(false);
+    });
+  }, [fetchAndSetUser, shouldRefetch]);
 
   const setUser = (newUser: IUser | null) => {
     setUserState(newUser);
   };
 
+  const refetchUser = () => {
+    setShouldRefetch(true);
+  };
+
   const logout = async () => {
     try {
       const res = await axiosCustom.get("/users/logout");
+
       if (res.status === 200) {
         setUser(null);
         toast.success("با موفقیت خارج شدید.", {
           position: "top-center",
         });
+        router.replace("/");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log(error);
-      toast.error(error.message, {
+      console.error(error);
+      toast.error(error.message || "خطا در خروج", {
         position: "bottom-center",
       });
     }
-
-    router.push("/");
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout, refetchUser }}>
       {children}
     </AuthContext.Provider>
   );
