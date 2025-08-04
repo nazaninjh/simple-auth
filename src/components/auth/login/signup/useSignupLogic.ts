@@ -1,12 +1,12 @@
-import signup from "@/app/api/client/signup/signup";
 import setZodFieldErrors from "@/functions/auth/setZodFieldErrors";
 import useDebouncedStateSetter from "@/hooks/useDebouncedStateSetter";
 import { useAuth } from "@/providers/auth.provider";
+import createSignupOptions from "@/query-options/signup/createSignupOptions";
 
 import { useMutation } from "@tanstack/react-query";
 
 import { FormEvent, useState } from "react";
-import { toast } from "react-toastify";
+
 import z from "zod";
 
 export const ISignupState = z.object({
@@ -45,22 +45,10 @@ export type IState = z.infer<typeof ISignupState>;
 
 const useSignupLogic = () => {
   const { refetchUser } = useAuth();
-  const mutation = useMutation({
-    mutationFn: signup,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
-      toast.error(error.message, {
-        position: "bottom-center",
-      });
-    },
-    onSuccess: () => {
-      toast.success("با موفقیت ثبت نام شدید.", {
-        position: "top-center",
-      });
 
-      refetchUser();
-    },
-  });
+  const mutation = useMutation(
+    createSignupOptions({ params: { refetchUser } })
+  );
 
   const [signupState, setSignupState] = useState<IState>({
     username: "",

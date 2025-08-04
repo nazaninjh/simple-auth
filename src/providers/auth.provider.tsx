@@ -13,7 +13,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { axiosCustom } from "@/axios/axiosConfig";
 import { toast } from "react-toastify";
 import { IUser } from "@/types/user.type";
-import fetchUserData from "@/helpers/client/fetchUserData";
+import fetchUserData from "@/helpers/client/users/fetchUserData";
 
 interface AuthContextType {
   user: IUser | null;
@@ -35,7 +35,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchedUser = await fetchUserData();
     setUserState(fetchedUser);
 
-    if (fetchedUser && !pathname.startsWith("/dashboard")) {
+    if (
+      fetchedUser &&
+      fetchedUser.username.toLowerCase() === "admin" &&
+      !pathname.startsWith("/dashboard")
+    ) {
+      router.push("/dashboard/admin");
+    } else if (fetchedUser && !pathname.startsWith("/dashboard")) {
       router.push("/dashboard");
     } else if (!fetchedUser && pathname.startsWith("/dashboard")) {
       router.push("/");

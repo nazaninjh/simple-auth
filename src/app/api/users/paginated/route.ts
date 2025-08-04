@@ -12,10 +12,10 @@ export async function GET(req: NextRequest) {
   }
 
   const params = new URL(req.url).searchParams;
-  console.log(Number(params.get("page")));
 
   const limit = Number(params.get("limit")) ?? RETURN_NUM;
   const pageNum: number = Number(params.get("page")) || 1;
+
   const users = await User.find({});
   const userCount = users.length;
   const hasMore = (pageNum - 1) * limit + limit <= userCount;

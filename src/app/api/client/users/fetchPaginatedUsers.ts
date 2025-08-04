@@ -3,6 +3,7 @@ import { TGetPaginatedUsers } from "@/types/queries/users/getPaginatedUsers.type
 
 const fetchPaginatedUsers = async (options: TGetPaginatedUsers) => {
   const { pageNum, limit } = options;
+
   try {
     const queryParams = new URLSearchParams();
     if (pageNum) queryParams.append("page", pageNum.toString());

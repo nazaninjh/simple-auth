@@ -1,14 +1,12 @@
 "use client";
-import { FormEvent, useState } from "react";
 import z from "zod";
+import { FormEvent, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
-
-import { toast } from "react-toastify";
 import useDebouncedStateSetter from "@/hooks/useDebouncedStateSetter";
 import { useMutation } from "@tanstack/react-query";
-import { login } from "@/app/api/client/login/login";
 import { setZodFieldErrors } from "@/functions/auth/setZodFieldErrors";
 import { useAuth } from "@/providers/auth.provider";
+import createLoginOptions from "@/query-options/login/createLoginOptions";
 
 export const ILoginState = z.object({
   username: z.string().min(1, {
@@ -23,18 +21,7 @@ export type IState = z.infer<typeof ILoginState>;
 
 function useLoginLogic() {
   const { refetchUser } = useAuth();
-  const mutation = useMutation({
-    mutationFn: login,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
-      toast.error(error.message, {
-        position: "bottom-center",
-      });
-    },
-    onSuccess: () => {
-      refetchUser();
-    },
-  });
+  const mutation = useMutation(createLoginOptions({ params: { refetchUser } }));
 
   const [loginState, setLoginState] = useState<IState>({
     username: "",
